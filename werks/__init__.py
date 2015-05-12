@@ -3,7 +3,7 @@
 This is a basic and simple framework that should be reproducable in other
 languages.  Provides the following:
 
-* Service Bus (implemented in a single thread)
+* Service Event Bus (implemented in a single thread)
 * Service Directory (look-up a service reference by name)
 
 * .. more to come, surely.
@@ -59,14 +59,14 @@ class PublishFailures(Exception):
 
 ## ######################################################################
 
-class Bus(object):
+class EventBus(object):
 
     def __init__(self, **kwds):
         self.listeners = dict(
             [(channel, set()) for channel 
              in ('main')])
-        super(Bus, self).__init__(**kwds)
-        #print("Bus() initialized.")
+        super(EventBus, self).__init__(**kwds)
+        #print("EventBus() initialized.")
 
 
     def subscribe(self, channel, callback):
@@ -96,7 +96,8 @@ class Bus(object):
             except KeyboardInterrupt:
                 raise
             except SystemExit:
-                # If there were previous (non SystemExit) errors, make sure exit code in non-zero
+                # If there were previous (non SystemExit) errors, 
+                # make sure exit code in non-zero
                 e = sys.exc_info()[1]
                 if exc and e.code == 0:
                     e.code = 1
@@ -116,18 +117,18 @@ class Bus(object):
 class Registry(object):
 
     def __init__(self, **kwds):
-        self.registry = dict()
+        self.reg = dict()
         super(Registry, self).__init__(**kwds)
 
 
     def register(self, name, service):
         """Add 'service' with 'name' to the service registry."""
-        self.services[name] = service
+        self.reg[name] = service
 
 
     def lookup(self, name, alt=None):
         """Lookup a registered service by name."""
-        return self.services.get(name, alt)
+        return self.reg.get(name, alt)
 
 
 
@@ -135,7 +136,7 @@ class Registry(object):
 ## Hub classes - intended for use by application cores.
 ## 
 
-class BasicHub(Registry, Bus):
+class BasicHub(Registry, EventBus):
     pass
 
 
@@ -145,6 +146,25 @@ class Hub(BasicHub):
         super(Hub, self).__init__(**kwds)
         #super().__init__(**kwds)
 
+
+## ######################################################################
+
+class EventHandler(object):
+
+    def __init__(self, bus):
+        self.bus = bus
+
+    def subscribe(self):
+        for channel in self.bus.listeners:
+            method = getattr(self, channel, None)
+            if method is not None:
+                self.bus.subscribe(channel, method)
+
+    def unsubscribe(self):
+        for channel in self.bus.listeners:
+            method = getattr(self, channel, None)
+            if method is not None:
+                self.bus.unsubscribe(channel, method)
 
 
 
