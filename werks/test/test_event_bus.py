@@ -30,7 +30,32 @@ class EventBusTestCases(unittest.TestCase):
         b = werks.EventBus()
         self.assertIsNotNone(b)
 
-    
+
+    def test_add_channel(self):
+        ch_name = "ch1"
+        b = werks.EventBus()
+        b.add_channel(ch_name)
+        self.assertTrue( ch_name in b.listeners )
+        self.assertTrue( len(b.listeners[ch_name]) == 0 )
+
+
+    def test_remove_channel(self):
+        ch_name = "ch1"
+        b = werks.EventBus()
+        b.add_channel(ch_name)
+        b.remove_channel(ch_name)
+        self.assertTrue( ch_name not in b.listeners )
+
+
+    def test_fail_remove_channel(self):
+        ch_name = "ch1"
+        b = werks.EventBus()
+        cb = TestEventHandler()
+        b.subscribe(ch_name, cb.callback)
+        # with self.assertRaises(werks.EventBusException):
+        #     b.remove_channel(ch_name)
+
+
     def test_subscribe_publish(self):
         b = werks.EventBus()
         cb = TestEventHandler()

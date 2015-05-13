@@ -27,7 +27,7 @@ languages.  Provides the following:
 __version__ = '0.0.1'
 __author__  = 'Eric Gustafson <eg@elfwerks.org>'
 
-
+import sys
 
 ## ######################################################################
 
@@ -62,11 +62,22 @@ class PublishFailures(Exception):
 class EventBus(object):
 
     def __init__(self, **kwds):
-        self.listeners = dict(
-            [(channel, set()) for channel 
-             in ('main')])
+        self.listeners = dict()
         super(EventBus, self).__init__(**kwds)
-        #print("EventBus() initialized.")
+
+
+    def add_channel(self, channel):
+        if channel not in self.listeners:
+            self.listeners[channel] = set()
+
+
+    def remove_channel(self, channel):
+        if channel in self.listeners:
+            if len(self.listeners[channel]) < 1:
+                del self.listeners[channel]
+            else:
+                pass
+                ## Raise EventBusException
 
 
     def subscribe(self, channel, callback):
@@ -151,8 +162,9 @@ class Hub(BasicHub):
 
 class EventHandler(object):
 
-    def __init__(self, bus):
+    def __init__(self, bus, **kwds):
         self.bus = bus
+        super(EventHandler, self).__init__(**kwds)
 
     def subscribe(self):
         for channel in self.bus.listeners:
