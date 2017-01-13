@@ -1,9 +1,9 @@
 import unittest
 
-import werks
+import werks.bus
 
 
-class TestEventHandler(werks.EventHandler):
+class TestEventHandler(werks.bus.EventHandler):
 
     def __init__(self, bus):
         self.triggered = False
@@ -17,7 +17,7 @@ class TestEventHandler(werks.EventHandler):
 class EventHandlerTestCase(unittest.TestCase):
 
     def test_event_handler(self):
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         b.add_channel("channel_name")
         eh = TestEventHandler(b)
         eh.subscribe()

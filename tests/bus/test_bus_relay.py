@@ -1,6 +1,6 @@
 import unittest
 
-import werks
+import werks.bus
 
 class TestCountingRelay(object):
 
@@ -18,7 +18,7 @@ class TestQueuingEventHandler(object):
 
     def __init__(self):
         self.args = []
-    
+
     def callback(self, arg):
         self.args.append(arg)
 
@@ -29,7 +29,7 @@ class EventBusRelayTestCase(unittest.TestCase):
     def setUp(self):
         self.input_ch = "input-ch"
         relay_ch = "relay-ch"
-        self.b = werks.EventBus()
+        self.b = werks.bus.EventBus()
         r = TestCountingRelay(self.b, relay_ch)
         self.cb = TestQueuingEventHandler()
         self.b.subscribe(self.input_ch, r.callback)

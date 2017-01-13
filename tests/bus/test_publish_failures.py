@@ -1,12 +1,12 @@
 import unittest
 
-import werks
+import werks.bus
 
 class TestFailure(Exception):
 
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
-        
+
 
 class FailingEventHandler(object):
 
@@ -17,21 +17,21 @@ class FailingEventHandler(object):
 class BusSubscriberExceptionTestCase(unittest.TestCase):
 
     def test_exception_thrown(self):
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb = FailingEventHandler()
         b.subscribe("ch1", cb.callback)
-        with self.assertRaises(werks.PublishFailures):
+        with self.assertRaises(werks.bus.PublishFailures):
             b.publish("ch1")
 
 
     def test_nested_exeception_thrown(self):
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb = FailingEventHandler()
         b.subscribe("ch1", cb.callback)
         try:
             b.publish("ch1")
             self.fail("publish should have thrown")
-        except werks.PublishFailures as err:
+        except werks.bus.PublishFailures as err:
             nested = err.get_instances()
             self.assertTrue( len(nested) == 1 )
             self.assertIsInstance( nested[0], TestFailure )

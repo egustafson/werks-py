@@ -1,6 +1,6 @@
 import unittest
 
-import werks
+import werks.bus
 
 class TestEventHandler(object):
 
@@ -27,13 +27,13 @@ class TestEventHandler(object):
 class EventBusTestCases(unittest.TestCase):
 
     def test_init_eventbus(self):
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         self.assertIsNotNone(b)
 
 
     def test_add_channel(self):
         ch_name = "ch1"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         b.add_channel(ch_name)
         self.assertTrue( ch_name in b.listeners )
         self.assertTrue( len(b.listeners[ch_name]) == 0 )
@@ -41,7 +41,7 @@ class EventBusTestCases(unittest.TestCase):
 
     def test_remove_channel(self):
         ch_name = "ch1"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         b.add_channel(ch_name)
         b.remove_channel(ch_name)
         self.assertTrue( ch_name not in b.listeners )
@@ -49,15 +49,15 @@ class EventBusTestCases(unittest.TestCase):
 
     def test_fail_remove_channel(self):
         ch_name = "ch1"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb = TestEventHandler()
         b.subscribe(ch_name, cb.callback)
-        # with self.assertRaises(werks.EventBusException):
+        # with self.assertRaises(werks.bus.EventBusException):
         #     b.remove_channel(ch_name)
 
 
     def test_subscribe_publish(self):
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb = TestEventHandler()
         b.subscribe("ch1", cb.callback)
         b.publish("ch1")
@@ -66,7 +66,7 @@ class EventBusTestCases(unittest.TestCase):
 
     def test_unsubscribe(self):
         channel_name = "ch1"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb1 = TestEventHandler()
         cb2 = TestEventHandler()
         b.subscribe(channel_name, cb1.callback)
@@ -78,7 +78,7 @@ class EventBusTestCases(unittest.TestCase):
 
 
     def test_pub_no_sub(self):
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         b.publish("channel_name")
         self.assertTrue(True)
 
@@ -86,17 +86,17 @@ class EventBusTestCases(unittest.TestCase):
     def test_pub_with_arg(self):
         channel_name = "ch1"
         arg_value = "arg-value"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb = TestEventHandler()
         b.subscribe(channel_name, cb.cb_arg)
         b.publish(channel_name, arg_value)
         self.assertEqual(cb.arg, arg_value)
 
-    
+
     def test_pub_with_keyword(self):
         channel_name = "ch1"
         kw_value = "kw-value"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb = TestEventHandler()
         b.subscribe(channel_name, cb.cb_kw)
         b.publish(channel_name, kw=kw_value)
@@ -107,7 +107,7 @@ class EventBusTestCases(unittest.TestCase):
         channel_name = "ch1"
         kw_value = "kw-value"
         arg_value = "arg-value"
-        b = werks.EventBus()
+        b = werks.bus.EventBus()
         cb1 = TestEventHandler()
         cb2 = TestEventHandler()
         b.subscribe(channel_name, cb1.cb_arg_kw)
